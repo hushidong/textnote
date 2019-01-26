@@ -1,0 +1,337 @@
+%%
+%% This is file `textnote.sty',
+%%
+%% ---------------------------------------------------------------
+%% textnote.sty'--- A packagefor generating a note in text body
+%% textnote 一个生成位于版心内的页尾注的宏包
+%%
+%% Maintained by huzhenzhen
+%% E-mail: hzzmail@163.com
+%% Released under the LaTeX Project Public License v1.3c or later
+%% ---------------------------------------------------------------
+%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{textnote}[2019/01/25 v1.0 a package for notes in text body]
+
+\RequirePackage{etoolbox,calc,tikz}
+
+
+% \drawgrid[<#1>]{<#2>}
+% #1 = 行数，可选，不给出画整页
+% #2 = 行长度
+\newcommand{\drawgrid}[2][\@empty]{%
+    \noindent%
+    \def\cchtratio{0.92}%汉字基线下深度占0.08,即高占0.92的大小
+    \newcounter{hangshu}%
+    \newcounter{zishu}%
+    \ifx#1\@empty%
+        \setcounter{hangshu}{1*\ratio{\textheight-\cchtratio\ccwd}{\baselineskip}}%
+    \else%
+        \setcounter{hangshu}{#1}%
+    \fi%
+    \setcounter{zishu}{1*\ratio{#2}{\ccwd}}%假设字的实际高和宽一致为\ccwd,5号字默认是10.5bp
+    \raisebox{-\numexpr\thehangshu\baselineskip}[0pt][0pt]{%
+    \makebox[0pt][l]{%
+    \begin{tikzpicture}
+      %画\thehangshu 条基线
+      \foreach \m in {0,1,2,...,\numexpr\thehangshu}%%\numexpr
+      \draw[blue!50](0pt,-\m\baselineskip) -- (#2,-\m\baselineskip);
+      %画\thehangshu 条字顶上方的线
+      %\foreach \x in {0,1,2,...,\numexpr\thehangshu}%%\numexpr
+      %\draw[red!50,yshift=\cchtratio\ccwd](0pt,-\x\baselineskip) -- (#2,-\x\baselineskip);
+      %画\thezishu 条竖线
+      \foreach \n in {1,2,...,\thezishu}%
+      \draw[green!50](\n\ccwd,\cchtratio\ccwd) -- (\n\ccwd,-\numexpr\thehangshu\baselineskip);
+    \end{tikzpicture}%
+    }}\indent%
+}
+
+%手动页边旁注
+\def\testparnote#1{\vadjust{\setbox0=\hbox{\parbox[t][][t]{2cm}{#1}\hskip1em} \ht0=0pt \dp0=0pt \llap{\box0}}}
+
+%手动右侧页内旁注
+\def\linerightnote#1{\leavevmode\setbox0=\hbox{\hskip1em\fbox{\parbox[t][][t]{0.45\linewidth}{#1}}}\vadjust{\moveright 0.5\linewidth\vbox to 0pt{\vskip-0.8\baselineskip\box0\vss}}}
+
+%手动左侧页内旁注
+\def\lineleftnote#1{\leavevmode\setbox0=\hbox{\fbox{\parbox[t][][t]{0.45\linewidth}{#1}}\hskip1em}\vadjust{\vbox to 0pt{\vskip-0.8\baselineskip\box0\vss}}}
+
+%用于自动页内右侧尾注
+\def\linenote#1#2{\leavevmode\setbox0=\hbox{\hskip1em\fbox{\parbox[t][][t]{0.45\linewidth}{#1}}}\vadjust{\moveright 0.5\linewidth\vbox to 0pt{\vskip#2\baselineskip\vskip-1.80645\baselineskip\box0\vss}}}
+
+%用于封装parshape
+\def\newparshape{\parshape\@npshape0{}}
+
+\def\@npshape#1#2#3{\ifx&#3\expandafter\@@@npshape\else\expandafter\@@npshape\fi
+{#1}{#2}{#3}}
+
+\def\@@npshape#1#2#3#4#5{%
+\ifnum#3>\z@
+\expandafter\@firstoftwo
+\else
+\expandafter\@secondoftwo
+\fi
+{\expandafter\@@npshape\expandafter{\the\numexpr#1+1\relax}{#2 #4 #5}{\numexpr#3-1\relax}{#4}{#5}}%
+{\@npshape{#1}{#2}}}
+
+\def\@@@npshape#1#2#3{#1 #2 }
+
+%用于记录页内尾注的内容
+\newcounter{textnote}
+\newcounter{textnotetmp}
+\newcounter{textnotelst}
+\setcounter{textnote}{0}
+\def\textnotetext{}
+\def\textnote#1{\stepcounter{textnote}\textsuperscript{[\arabic{textnote}]}%
+\global\csdef{textnotetext\thetextnote}{#1}}
+
+%利用list环境来显示页内尾注
+\newenvironment{notelist}
+  {\list%环境开始定义代码(begin code)
+     {[\arabic{textnotelst}]}
+     {\usecounter{textnotelst}
+      \setlength{\labelwidth}{2em}%
+      \setlength{\labelsep}{0.5cm}%
+      \setlength{\itemindent}{0pt}%
+      %\setlength{\leftmargin}{\labelwidth}%
+      %\addtolength{\leftmargin}{\labelsep}%
+      \setlength{\itemsep}{0pt}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\parskip}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parsep}{0pt}}%
+      \renewcommand*{\makelabel}[1]{\hss##1}}%\item\relax
+  {\endlist}%环境结束定义代码(end code)
+
+%用于一页内尾注全部内容记录
+\def\notecontents{%
+    \ifnum\thetextnote>0
+    \setcounter{textnotetmp}{1}
+    \begin{notelist}
+        \loop
+            \item \csuse{textnotetext\thetextnotetmp}
+            \ifnum\thetextnotetmp<\thetextnote
+            \stepcounter{textnotetmp}
+        \repeat
+    \end{notelist}
+    \fi
+}
+
+%当前页面的注的数量
+\newcounter{textnotepg}
+%将#1页的所有注内容整合起来
+\def\notecontentsb#1{%
+   \setcounter{textnotepg}{\csuse{notesonpage#1}}
+   \ifnumgreater{\thetextnotepg}{0}{%
+    \setcounter{textnotetmp}{1}
+    \begin{notelist}
+        \loop
+            \item \csuse{pagenotes#1\thetextnotetmp}
+            \ifnum\thetextnotetmp<\thetextnotepg
+            \stepcounter{textnotetmp}
+        \repeat
+    \end{notelist}}{}
+}
+
+
+\providerobustcmd*{\unspace}{%
+  \ifbool{hmode}
+    {\ifdimgreater\lastskip\z@
+       {\unskip\unspace}
+       {\ifnumgreater\lastpenalty\z@
+          {\unpenalty\unspace}
+          {}}}
+    {}}
+
+%用于计算页内尾注的高度位置、计算需要调整形状的段落的信息
+\newbox\notebox
+\newbox\parabox
+\newtoggle{noteprted}
+\togglefalse{noteprted}
+\newlength{\notevsize}
+\newlength{\restvsize}
+\newcounter{notelines}
+\newcounter{restlines}
+\newcounter{shaplines}
+\newcounter{statlines}
+\newlength{\hanzishen}%
+\settodepth{\hanzishen}{当然哥除了是最}%
+\newcounter{allparas}%记录本页的段落总数
+\setcounter{allparas}{0}
+\newcounter{recparas}%记录本页的计算空间的段落总数
+\setcounter{recparas}{0}
+
+%用于判断是否已经记录了所有的信息
+\newtoggle{auxinfoused}
+\togglefalse{auxinfoused}
+\newlength{\restparvsize}%用于处理记录到文件的尺寸
+\newlength{\matchvsize}
+
+\newsavebox{\infobox}
+
+%将#1页的所有注高度与段落高度比较确定要parshape的段落
+\newcommand{\parrestvsize}[2]{%
+\defcounter{recparas}{\csuse{recparaspage#1}}%
+\setcounter{textnotetmp}{1}%
+\ifnumgreater{\therecparas}{0}{%
+\savebox{\infobox}{\parbox{0.2\linewidth}{%
+        \loop
+           \setlength{\restparvsize}{\csuse{pagevsize#1\thetextnotetmp}}%\the\restparvsize\the#2;\newline
+           \ifdimgreater{\restparvsize}{#2}{\global\deflength{\matchvsize}{\restparvsize}}{}%
+           %替换的意义容易导致问题，所以要让他有赋值的概念
+           %这里如果用setlength就容易出问题。
+            \ifnum\thetextnotetmp<\therecparas%
+            \stepcounter{textnotetmp}%
+        \repeat%\newline
+        \the\matchvsize}}}{}%\usebox{\infobox}
+}
+
+
+%利用everypar来做计算并设置段落形状
+\def\printnote{%
+\everypar{%
+\iftoggle{auxinfoused}%
+{%
+\setbox\notebox=\hbox{\parbox{0.45\linewidth}{\notecontentsb\thepage}}%
+\deflength{\notevsize}{\ht\notebox+\dp\notebox}%
+\parrestvsize{\thepage}{\notevsize}%\value取值，而不是用\thepage
+\ifdimgreater{\pagegoal}{\textheight}%因为页面开始处pagegoal过大所以做如下判断
+{\deflength{\restvsize}{\textheight}}%
+{\deflength{\restvsize}{\pagegoal-\pagetotal+\hanzishen}}%
+\addtolength{\matchvsize}{1pt}%增加一点空间
+%\hbox to 0pt{\hss \color{red}aux true\the\matchvsize\the\restvsize :\thetextnotepg}%
+%\hbox to 0pt{\hss \color{red}aux info true\thetextnotepg}%
+\ifnumgreater{\thetextnotepg}{0}{%
+\ifdimless{\restvsize}{\matchvsize}{%
+   %确定注的行数
+    \setcounter{notelines}{1*\ratio{\notevsize}{\baselineskip}+1}%
+    %确定留白行数,把汉字深度加上就基本精确了。
+    \setcounter{restlines}{1*\ratio{\restvsize}{\baselineskip}}%
+\ifdimless{\baselineskip * (\value{restlines} + 1) - \restvsize}{1pt}{\stepcounter{restlines}}{}%
+    %\hbox to 0pt{\hss \color{red}rest\the\restvsize note\the\notevsize}%
+    %段落开始形状不变的行数
+    \defcounter{statlines}{\therestlines-\thenotelines}%
+    %\hbox to 0pt{\hss \color{red}rest:\therestlines\space note:\thenotelines}%
+    \iftoggle{noteprted}{%如果前面段落处理时，注已经输出
+            \newparshape{\arabic{restlines}}{0pt}{0.5\linewidth}{1}{0pt}{\linewidth}&\unspace%
+    }{%注第一次输出
+                \defcounter{shaplines}{\thestatlines+1}%
+%\hbox to 0pt{\hss \color{red}stat:\thestatlines\space shap:\theshaplines}%
+\newparshape{\arabic{statlines}}{0pt}{\linewidth}{\arabic{notelines}}{0pt}{0.5\linewidth}{1}{0pt}{\linewidth}&\unspace%
+\linenote{\notecontentsb\thepage}{\theshaplines}%
+    \toggletrue{noteprted}%
+    }%
+}{}%
+}{}%
+}%
+{%
+    \stepcounter{allparas}%
+    \ifnum\thetextnote>0%%把注的内容放入盒子方便计算盒子的尺寸
+    \stepcounter{recparas}%
+    \setbox\notebox=\hbox{\parbox{0.45\linewidth}{\notecontents}}%
+    %%注的高和深=注的有效高度
+    \deflength{\notevsize}{\ht\notebox+\dp\notebox}%
+    %当前留白的高度+汉字深=前面一段最后一条基线到\pagegoal的高度
+    \deflength{\restvsize}{\pagegoal-\pagetotal+\hanzishen}%
+    \csxdef{restvsize\therecparas}{\the\restvsize}%
+    %\hbox to 0pt{\hss\csuse{restvsize\therecparas}:\thetextnote :\theallparas :\therecparas}%
+    %\hbox to 0pt{\hss rest:\the\restvsize\space note:\the\notevsize}%
+    %确定注的行数
+    \setcounter{notelines}{1*\ratio{\notevsize}{\baselineskip}+1}%
+    %确定留白行数,把汉字深度加上就基本精确了。
+    \setcounter{restlines}{1*\ratio{\restvsize}{\baselineskip}}%
+\ifdimless{\baselineskip * (\value{restlines} + 1) - \restvsize}{1pt}{\stepcounter{restlines}}{}%
+    %段落开始形状不变的行数
+    \defcounter{statlines}{\therestlines-\thenotelines}
+    %\hbox to 0pt{\hss \color{red}aux info false}%
+    \hbox to 0pt{\hss \color{red}rest:\therestlines\space note:\thenotelines}%
+    \iftoggle{noteprted}{%如果前面段落处理时，注已经输出
+        \ifdim\restvsize>\notevsize%
+            \newparshape{\arabic{statlines}}{0pt}{\linewidth}{\arabic{notelines}}{0pt}{0.5\linewidth}{1}{0pt}{\linewidth}&\unspace%
+        \else%
+            \newparshape{\arabic{restlines}}{0pt}{0.5\linewidth}{1}{0pt}{\linewidth}&\unspace%
+        \fi%
+    %\setcounter{textnote}{0}%可能未必合适，当页面底部存在多个小的段落时
+    }{%注第一次输出
+        \ifdim\restvsize<5\notevsize%
+            \ifdim\restvsize>\notevsize%
+                \defcounter{shaplines}{\thestatlines+1}%
+    \newparshape{\arabic{statlines}}{0pt}{\linewidth}{\arabic{notelines}}{0pt}{0.5\linewidth}{1}{0pt}{\linewidth}&\unspace%
+    \linenote{\notecontents}{\theshaplines}%
+    \toggletrue{noteprted}%
+            \fi%
+        \fi%
+    }%
+    \fi%
+}%
+}%
+}
+
+\def\writenotesinaux{
+  \begingroup
+    %\def\on@line{}%
+    %\PackageInfo{zref-runs}{LaTeX runs: \zruns}%
+    \if@filesw
+      \immediate\write\@mainaux{%记录当前页的注的数量
+       \string\global\string\toggletrue{auxinfoused}%
+        \string\csgdef{notesonpage\thepage}{\thetextnote}%
+      }%
+      \ifnum\thetextnote>0
+          \setcounter{textnotetmp}{1}
+          \loop
+          \immediate\write\@mainaux{%记录当前页的各注的内容
+            \string\csgdef{pagenotes\thepage\thetextnotetmp}{\csuse{textnotetext\thetextnotetmp}}%
+          }%
+          \ifnum\thetextnotetmp<\thetextnote
+          \stepcounter{textnotetmp}
+          \repeat
+      \fi
+      \immediate\write\@mainaux{%当前页记录空间的段落的数量
+        \string\csgdef{recparaspage\thepage}{\therecparas}%
+      }%
+      \ifnum\therecparas>0
+          \setcounter{textnotetmp}{1}
+          \loop
+          \immediate\write\@mainaux{%记录当前页的各注的内容
+            \string\csgdef{pagevsize\thepage\thetextnotetmp}{\csuse{restvsize\thetextnotetmp}}%
+          }%
+          \ifnum\thetextnotetmp<\therecparas
+          \stepcounter{textnotetmp}
+          \repeat
+      \fi
+    \fi
+  \endgroup
+}
+
+\def\clearnotesinmemory{
+        \setcounter{textnotetmp}{1}
+        \loop
+            %把当前页的注的内容取消掉
+            \global\csundef{textnotetext\thetextnotetmp}
+            \ifnum\thetextnotetmp<\thetextnote
+            \stepcounter{textnotetmp}
+        \repeat
+        \setcounter{textnote}{0}%把当前页的注的总数取消掉
+        \setcounter{textnotetmp}{1}
+        \loop
+            %把当前页的注的内容取消掉
+            \global\csundef{restvsize\thetextnotetmp}
+            \ifnum\thetextnotetmp<\thetextnote
+            \stepcounter{textnotetmp}
+        \repeat
+        \setcounter{allparas}{0}%把当前页的段落的总数取消掉
+        \setcounter{recparas}{0}%把当前页的记录空间的段落的总数取消掉
+        \global\togglefalse{noteprted}%把当前页的形状设置标识去掉
+}
+
+
+%文档开始进入处理，并且每一页开始自动重设注的数量
+\AtBeginDocument{\printnote\pretocmd{\shipout}{
+\iftoggle{auxinfoused}{}{\writenotesinaux}
+\clearnotesinmemory}{}{}}
+
+
+
+\endinput
+%%
+%% End of file `calc.sty'.

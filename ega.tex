@@ -1,0 +1,126 @@
+% !Mode:: "TeX:UTF-8"
+\documentclass{article}%[11pt]
+\usepackage{ctex}
+\usepackage[left=3cm,right=2cm]{geometry}%[showframe,showcrop]
+
+\usepackage{textnote}
+
+\usepackage[type=none,showframe=true]{fgruler}
+%[unit=cm,type=lowerleft,showframe=true,hshift=3cm,vshift=2cm]
+\rulerparams{}{}{red}{}{0.5pt}
+\fgrulerdefnum{}\fgrulercaptioncm{}%fgruler加数字后，导致基线对齐出现问题，所以这里去掉
+
+
+\newlength{\skipheadrule}
+\deflength{\skipheadrule}{3.5pt}
+\newlength{\skipfootrule}
+\deflength{\skipfootrule}{5.5pt}
+\newlength{\ruletotalen}
+\deflength{\ruletotalen}{\textheight}
+\newlength{\ruleraised}
+\deflength{\ruleraised}{\headsep+\textheight}
+\usepackage{fancyhdr}
+\fancyhead[L]{%
+\raisebox{-\skipheadrule}{%
+\raisebox{-\headsep}[0pt][0pt]{\makebox[0pt][l]{\ruler{rightup}{\linewidth}}}%
+\raisebox{-\ruleraised}[0pt][0pt]{\makebox[0pt][r]{\ruler{upleft}{\ruletotalen}}}%
+}HEAD LEFT%
+}
+\fancyhead[R]{%
+HEAD RIGHT%
+\raisebox{-\skipheadrule}{%
+\hfill\makebox[0pt][l]{\raisebox{-\ruleraised}[0pt][0pt]{\ruler{downright}{\ruletotalen}}\hss}%
+}}
+\fancyhead[C]{%
+HEAD CENTER
+}
+\fancyfoot[L]{%
+\raisebox{-\skipfootrule}{%
+\raisebox{\footskip}[0pt][0pt]{\makebox[0pt][l]{\ruler{rightdown}{\linewidth}}}
+}FOOT LEFT
+}
+\fancyfoot[C]{%
+FOOT CENTER \thepage
+}
+\fancyfoot[R]{%
+FOOT RIGHT
+}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\pagestyle{fancy}
+
+
+\begin{document}
+
+%\show\output
+
+\drawgrid{\linewidth}%
+当然，除了\textnote{唐诗, 春晓, 作者: 孟浩然}小脚盆和棒子猴子之外，还有东南沿海之外的菲佣国；还有世界屋脊那边的三哥国，三哥国和猴子国之间还有一个竹楼国、一个佛陀国、一个咖喱国；还有跟三哥国\textnote{唐诗, 静夜思, 作者: 李白}互相看不上眼的小巴国；小巴国北面还有好几个骆驼国……这么多大大小小的国家崽子，环形拱卫着土鳖国，名为邦国\textnote{唐诗, 将进酒, 作者: 李白}，实为外藩，每隔几年都要向土鳖交保护费的说……背景如此复杂，精彩吧？
+
+
+%4.3cm有问题
+\begin{figure}[b]
+  \centering
+  \fbox{\parbox[c][3.1cm][c]{8cm}{\centering float example}}
+  \caption{float example}\label{fig:floateg}
+\end{figure}
+
+\newlength{\zitigao}
+\deflength{\zitigao}{10.5bp}
+
+小脚盆国还很年轻的时候，是最恭顺的孩子，心中有多大的不满也不说，美其名曰忍术！\footnote{这也不怪老土鳖瞎眼，任谁看了都会可怜}
+这也不怪老土鳖瞎眼，任谁看了都会可怜，小国寡民的，悬孤岛于海外，感受不到中原帝国的风采也就罢了，最主要的是后自己家的几个小岛，都是海底火山冒出水面的礁石，谁也搞不清楚这个超级大炮仗神马时候炸响……小脚盆国人的苦逼之甚，由此。\the\baselineskip\the\zitigao
+
+那时候%
+%\testparnote{唐诗 春晓\\
+%作者:孟浩然\\
+%春眠不觉晓，处处闻啼鸟。\\
+%夜来风雨声，花落知多少。}%
+的小脚盆为了出人头地，还是很下了一番苦功夫努力的
+\footnote{好好学习有木有？}。好好学习有木有？天天向上有木有？土鳖看了自然欣慰，私下里免不了传授了一些秘籍，盼望着这孩子长大了能出息，能出人头地，能挺直了腰杆子做人……钢铁是怎么炼成的我不知道，白眼狼一般就都是这么炼成滴。
+
+事实上，天不遂人愿的事情多了去了，大侠杨过都说了：“不如意事常八九，可以人言无二三啊。”好吧，闲言少叙，下面我们隆重介绍猴子家族……木有错，是家族，不是只有一个，而是一口气搞出来好几个猴子国，有越猴，马来猴，印尼猴……等等等等吧，反正一大堆猴子国，面积说大不大，一般抵得上土鳖国一个到两个行省的规模，人口说少不少，几百万到几千万个别上亿还是有滴，猴子从来不搞神马计划生育，所以以上的数据说起来有点儿气人，就不说了。
+
+猴儿国们都在土鳖国的南方，向来被土鳖当成自己家的后院儿，不许别人跑来乱串门子。说完了两个比较有名的属国，这周遭的其他国家也不能不表表，谁让这个世界这么精彩来着？当然也可以说这个世界怎么那么他奶奶的不让人顺心呢，如果这个世界只有土鳖一家，岂不是啥问题也没有了？说完了两个比较有名的属国，这周遭的其他国家也不能不表表，谁让这个世界这么精彩来着？当然也可以说这个世界怎么那1234唐诗么他奶奶的不让人顺心呢，如果这个世界只有土鳖一家，岂不是啥问题也没有了？说完了两个比较有名的属国，\textnote{唐诗, 春望, 作者: 杜甫}这周遭的其他国家也不能不表表，谁让这个世界这么精彩来着？当然也可以说这个世界怎么那么他奶奶的不让人顺心呢，如果这个世界只有土鳖一家，岂不是啥问题也没有了？说完了两个比较有名的属国，这周遭的其他国家也不能不表表，谁让这个世界这么精彩来着？当然也可以说这个世界怎么那么他奶奶的不让人顺心呢，如果这个世界只有土鳖一家，岂不是啥问题也没有了？
+
+说完了两个比较有名的属国，这周遭的其他国家也不能不表表，谁让这个世界这么精彩来着？当然也可以说这个世界怎么那么他奶奶的不让人顺心呢，如果这个世界只有土鳖一家，岂不是啥问题也没有了？说完了两个比较有名的属国，这周遭的其他国家也不能不表表，谁让这个世界这么精彩来着？当然也可以说这个世界怎么那么他奶奶的不让人顺心呢，如果这个世界只有土鳖一家，岂不是啥问题也没有了？
+
+问题是，古代人对客观世界的认知，主要还是靠眼睛和耳朵，太过于宏大的东西超出了人类的理解能力范围，所以土鳖国的老祖宗们，一直以为天是圆的，地是方的，到了海边就以为到了世界尽头，从来没有想过海的那一边也有美女可以搭讪。
+
+\linerightnote{唐诗 春晓\\
+作者:孟浩然\\
+春眠不觉晓，处处闻啼鸟。\\
+夜来风雨声，花落知多少。}\parshape=1 0pt 0.5\linewidth
+土鳖的历代大佬们，有值得骄傲的本钱：地盘占了一大块，而且还是最好的一大块，具体怎么个好法以后再说，先说说这块地盘有多大。往东，没的说，一直占到了大海边；往南，屏障在南方的猴国们都不大，过了猴国再往南看，又是茫茫大海；
+
+\lineleftnote{唐诗 春晓\\
+作者:孟浩然\\
+春眠不觉晓，处处闻啼鸟。\\
+夜来风雨声，花落知多少。}\parshape=1 0.5\linewidth 0.5\linewidth
+往西，万丈高山平地起，高的山腰往上都不长草，而且绵延数百上千里，飞鸟难越，人迹罕至，指望着骑马打过去，是木有意义滴；最后就是北边，北边的游牧民族曾经给土鳖带来了很大的威胁。不过那都是老黄历了，游牧民族被收服的被收服，被打跑的被打跑，空出来好大一片草原。
+
+\linerightnote{唐诗 春晓\\
+作者:孟浩然\\
+春眠不觉晓，处处闻啼鸟。\\
+夜来风雨声，花落知多少。}\parshape=5 0pt 0.5\linewidth 0pt 0.5\linewidth 0pt 0.5\linewidth 0pt 0.5\linewidth 0pt \linewidth
+当然了，那时候的土鳖可从来不承认自己是土鳖，它有一个更加响亮的名字：龙的传人！听听，龙的传人！有谁知道龙是神马东西？不知道木关系，三国时候的曹大白脸有标注：龙能大能小，能升能隐，大则兴云吐雾，小则隐介藏形。不是和老花一样，有点懵圈？好吧，通俗点说，龙这家伙虎须鬣尾，身长若蛇，有鳞若鱼，有角仿鹿，有爪似鹰，能走，亦能飞，能倒水，能大能小，能隐能现，能翻江倒海，吞风吐雾，兴云降雨。还是不懂？木关系，咱们直接说龙长的啥样：龙的形状是鹿的角，牛的耳朵，驼的头，兔的眼，蛇的颈，蜃的腹，鱼的鳞，鹿的脚掌，鹰的爪子。这就是有名的龙有九似，它来源于土鳖最古老的图腾蛇。
+
+%\csuse{restvsize1}
+%\csuse{restvsize2}
+%\csuse{restvsize3}
+%\csuse{restvsize4}
+%
+%\iftoggle{auxinfoused}{
+%auxinfousedis true
+%\deflength{\notevsize}{20pt}
+%\parrestvsize{1}{\notevsize}\relax\the\matchvsize
+%}{auxinfousedis false}
+
+%\the\matchvsize
+%\the\matchvsize
+
+
+\end{document}
+
+
